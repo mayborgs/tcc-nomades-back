@@ -1,0 +1,40 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch current lambda",
+      "program": "${workspaceFolder}/node_modules/.bin/sls",
+      "args": [
+        "invoke",
+        "local",
+        "-f",
+        "${input:lambda-name}",
+        "-p",
+        "src/app/mocks/${input:lambda-name}.json",
+        "--verbose"
+      ],
+      "autoAttachChildProcesses": true,
+      "sourceMaps": true,
+      "smartStep": true,
+      "outputCapture": "std",
+      "outFiles": [
+        "${workspaceFolder}/.esbuild/.build/**/*.js"
+      ],
+    }
+  ],
+  "inputs": [
+    {
+      "id": "lambda-name",
+      "type": "pickString",
+      "description": "Choose the lambda to run",
+      "options": [
+        "save-player",
+      ]
+    }
+  ]
+}

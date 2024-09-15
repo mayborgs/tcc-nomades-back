@@ -5,6 +5,14 @@ const lambda: NonNullable<AWS["functions"]>[string] = {
   reservedConcurrency: 1,
   timeout: 10,
   tracing: "Active",
+  events: [
+    {
+      http: {
+        method: "get",
+        path: "/tcc-nomades/informations",
+      }
+    }
+  ],
   environment: {
     PLAYER_TABLE_NAME: {
       Ref: "PlayerTable",
@@ -17,26 +25,26 @@ const lambda: NonNullable<AWS["functions"]>[string] = {
   // @ts-expect-error using plugin serverless-iam-roles-per-function
   iamRoleStatements: [
     // DynamoDB player table
-    {
-      Effect: "Allow",
-      Action: ["dynamodb:Query", "dynamodb:PutItem", "dynamodb:GetItem"],
-      Resource: [
-        {
-          "Fn::GetAtt": ["PlayerTable", "Arn"],
-        },
-        {
-          "Fn::Join": [
-            "",
-            [
-              {
-                "Fn::GetAtt": ["PlayerTable", "Arn"],
-              },
-              "/*",
-            ],
-          ],
-        },
-      ],
-    },
+    // {
+    //   Effect: "Allow",
+    //   Action: ["dynamodb:Query", "dynamodb:PutItem", "dynamodb:GetItem"],
+    //   Resource: [
+    //     {
+    //       "Fn::GetAtt": ["PlayerTable", "Arn"],
+    //     },
+    //     {
+    //       "Fn::Join": [
+    //         "",
+    //         [
+    //           {
+    //             "Fn::GetAtt": ["PlayerTable", "Arn"],
+    //           },
+    //           "/*",
+    //         ],
+    //       ],
+    //     },
+    //   ],
+    // },
     // X-Ray
     {
       Effect: "Allow",

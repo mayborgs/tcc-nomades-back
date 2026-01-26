@@ -10,8 +10,8 @@ const lambda: NonNullable<AWS["functions"]>[string] = {
       http: {
         method: "get",
         path: "/tcc-nomades/informations",
-      }
-    }
+      },
+    },
   ],
   environment: {
     PLAYER_TABLE_NAME: {

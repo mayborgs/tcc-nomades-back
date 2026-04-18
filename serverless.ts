@@ -26,7 +26,7 @@ const serverlessConfiguration: AWS = {
     },
   },
   functions: infrastructure.functions,
-  resources: infrastructure.resources,
+  // resources: infrastructure.resources,
   custom: {
     esbuild: {
       sourcemap: true,

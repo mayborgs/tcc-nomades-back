@@ -12,8 +12,8 @@ export class HotelsGateway implements IHotelsGateway {
       url: "https://booking-com15.p.rapidapi.com/api/v1/hotels/searchDestination",
       params: { query: `${to}` },
       headers: {
-        "x-rapidapi-key": "f1a598d425msh40cb25dc3a3c690p1c5779jsn666f529a56ba", // TODO: move to env variable
-        "x-rapidapi-host": "booking-com15.p.rapidapi.com", // TODO: move to env variable
+        "x-rapidapi-key": process.env.RAPID_API_KEY,
+        "x-rapidapi-host": process.env.RAPID_API_HOST,
         "Content-Type": "application/json",
       },
     };

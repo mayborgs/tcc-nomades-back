@@ -1,6 +1,5 @@
 import { type ICoinGateway } from "@/interfaces/gateways/coin.api.gateway";
 import { type IHotelsGateway } from "@/interfaces/gateways/hotels.api.gateway";
-import { type ISkyScannerGateway } from "@/interfaces/gateways/skyscanner.api.gateway";
 
 // eslint-disable-next-line no-restricted-imports
 import { CoinMapper } from "../mappers/coin.mapper";
@@ -11,17 +10,15 @@ export class GetSearchInformationUseCase {
   constructor(
     private readonly coinGateway: ICoinGateway,
     private readonly hotelsGateway: IHotelsGateway,
-    private readonly eventsGateway: ISkyScannerGateway,
   ) {}
 
   async execute({
-    from,
+    coin,
     to,
-    amount,
   }: {
+    coin: { from: string; to: string; amount?: number };
     from: string;
     to: string;
-    amount?: number;
   }): Promise<{
     coinInformation?: string;
     hotelsInformation?: IHotelDisplay[];
@@ -31,7 +28,7 @@ export class GetSearchInformationUseCase {
     let hotelsInformation: IHotelDisplay[] | undefined;
 
     try {
-      const coinData = await this.coinGateway.getCoin(from, to);
+      const coinData = await this.coinGateway.getCoin(coin.from, coin.to);
       if (coinData === undefined) {
         console.error("Error getting coin data");
         throw new Error(
@@ -39,7 +36,12 @@ export class GetSearchInformationUseCase {
         );
       }
 
-      coinInformation = CoinMapper.coinMap(coinData, amount ?? 1, from, to);
+      coinInformation = CoinMapper.coinMap(
+        coinData,
+        coin.amount ?? 1,
+        coin.from,
+        coin.to,
+      );
 
       const hotelsData = await this.hotelsGateway.getHotels(to);
       if (hotelsData === undefined) {

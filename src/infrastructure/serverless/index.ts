@@ -2,15 +2,15 @@
 // export all functions and resources
 
 import { type AWS } from "@serverless/typescript";
-import { readdirSync } from "fs";
+import { /* read */ readdirSync } from "fs";
 import { join } from "path";
 
 const output: {
   functions: Record<string, NonNullable<AWS["functions"]>[string]>;
-  resources: Record<string, NonNullable<AWS["resources"]>>;
+  // resources: Record<string, NonNullable<AWS["resources"]>>;
 } = {
   functions: {},
-  resources: {},
+  // resources: {},
 };
 
 // read functions folder and add each function to the output
@@ -27,27 +27,27 @@ functionsDir.forEach((file) => {
 });
 
 // read resources folder and add each resource to the output
-const resourcesDir = readdirSync(join(__dirname, "resources"));
+// const resourcesDir = readdirSync(join(__dirname, "resources"));
 
-resourcesDir.forEach((file) => {
-  // read each dir inside
-  const innerDir = readdirSync(join(__dirname, "resources", file));
-  innerDir.forEach((innerFile) => {
-    // const resourceName = innerFile.split(".")[0]
+// resourcesDir.forEach((file) => {
+//   read each dir inside
+//   const innerDir = readdirSync(join(__dirname, "resources", file));
+//   innerDir.forEach((innerFile) => {
+//     const resourceName = innerFile.split(".")[0]
 
-    const resource = require(
-      join(__dirname, "resources", file, innerFile),
-    ).default;
+//     const resource = require(
+//       join(__dirname, "resources", file, innerFile),
+//     ).default;
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    Object.keys(resource).forEach((key) => {
-      output.resources[key] = {
-        ...output.resources[key],
-        ...resource[key],
-      };
-    });
-  });
-});
+//     eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+//     Object.keys(resource).forEach((key) => {
+//       output.resources[key] = {
+//         ...output.resources[key],
+//         ...resource[key],
+//       };
+//     });
+//   });
+// });
 
 // console.log(output)
 

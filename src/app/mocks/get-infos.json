@@ -1,1 +1,9 @@
-{}
+{
+  "from": "São Paulo",
+  "to": "New York",
+  "coin": {
+    "from": "BRL",
+    "to": "USD",
+    "amount": 3
+  }
+}

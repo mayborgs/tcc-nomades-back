@@ -1,10 +1,10 @@
 {
-  "from": "São Paulo",
-  "to": "New York",
+  "from": "CGH",
+  "to": "JFK",
   "coin": {
     "from": "BRL",
     "to": "USD",
-    "amount": 3
+    "amount": 100
   },
   "date": "2026-04-30"
 }

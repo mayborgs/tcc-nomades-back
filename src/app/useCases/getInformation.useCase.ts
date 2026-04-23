@@ -8,6 +8,8 @@ import { CoinMapper } from "../mappers/coin.mapper";
 import { FlightsMapper, type IFlightDisplay } from "../mappers/flights.mapper";
 // eslint-disable-next-line no-restricted-imports
 import { HotelsMapper, type IHotelDisplay } from "../mappers/hotels.mapper";
+// eslint-disable-next-line no-restricted-imports
+import { locationMapper } from "../mappers/location.mapper";
 
 export class GetSearchInformationUseCase {
   constructor(
@@ -51,7 +53,10 @@ export class GetSearchInformationUseCase {
         coin.to,
       );
 
-      const hotelsData = await this.hotelsGateway.getHotels(to);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      const hotelsData = await this.hotelsGateway.getHotels(
+        locationMapper[to as keyof typeof locationMapper],
+      );
       if (hotelsData === undefined) {
         console.error("Error getting hotels data");
         throw new Error(

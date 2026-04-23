@@ -15,30 +15,8 @@ const get = new GetSearchInformationUseCase(
 );
 
 const inputSchema = z.object({
-  from: z.enum([
-    "NYCA",
-    "EWR",
-    "JFK",
-    "LGA",
-    "SWF",
-    "SAOA",
-    "GRU",
-    "VCP",
-    "CGH",
-    "PPB",
-  ]),
-  to: z.enum([
-    "NYCA",
-    "EWR",
-    "JFK",
-    "LGA",
-    "SWF",
-    "SAOA",
-    "GRU",
-    "VCP",
-    "CGH",
-    "PPB",
-  ]),
+  from: z.enum(["JFK", "LGA", "GRU", "CGH"]),
+  to: z.enum(["JFK", "LGA", "GRU", "CGH"]),
   coin: z.object({
     from: z.enum([
       "AUD",

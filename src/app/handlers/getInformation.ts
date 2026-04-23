@@ -2,17 +2,43 @@
 import { z } from "zod";
 
 import { CoinGateway } from "../gateways/coin.api.gateway";
+import { FlightsGateway } from "../gateways/flights.api.gateway";
 import { HotelsGateway } from "../gateways/hotels.api.gateway";
+import { type IFlightDisplay } from "../mappers/flights.mapper";
+import { type IHotelDisplay } from "../mappers/hotels.mapper";
 import { GetSearchInformationUseCase } from "../useCases/getInformation.useCase";
 
 const get = new GetSearchInformationUseCase(
   new CoinGateway(),
   new HotelsGateway(),
+  new FlightsGateway(),
 );
 
 const inputSchema = z.object({
-  from: z.string(),
-  to: z.string(),
+  from: z.enum([
+    "NYCA",
+    "EWR",
+    "JFK",
+    "LGA",
+    "SWF",
+    "SAOA",
+    "GRU",
+    "VCP",
+    "CGH",
+    "PPB",
+  ]),
+  to: z.enum([
+    "NYCA",
+    "EWR",
+    "JFK",
+    "LGA",
+    "SWF",
+    "SAOA",
+    "GRU",
+    "VCP",
+    "CGH",
+    "PPB",
+  ]),
   coin: z.object({
     from: z.enum([
       "AUD",
@@ -80,6 +106,9 @@ const inputSchema = z.object({
     ]),
     amount: z.number().optional(),
   }),
+  date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "Formato inválido. Use YYYY-MM-DD"), // format pattern example: "2026-04-30"
 });
 
 /**
@@ -87,14 +116,16 @@ const inputSchema = z.object({
  */
 export default async function (event: z.infer<typeof inputSchema>): Promise<{
   coinInformation?: string;
-  hotelsInformation?: unknown;
+  hotelsInformation?: IHotelDisplay[];
+  flightsInformation?: IFlightDisplay[];
 }> {
-  const { from, to, coin } = inputSchema.parse(event);
+  const { from, to, coin, date } = inputSchema.parse(event);
 
   const informations = await get.execute({
     coin,
     from,
     to,
+    date,
   });
 
   return informations;

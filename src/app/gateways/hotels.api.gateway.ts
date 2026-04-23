@@ -20,6 +20,16 @@ export class HotelsGateway implements IHotelsGateway {
 
     try {
       const response = await axios.request<IHotelsApiResponse>(options);
+
+      if (
+        !response.data.status ||
+        response.data.message !== "Success" ||
+        response.status !== 200
+      ) {
+        console.error("Hotels API returned an error:", response.data.message);
+        return undefined;
+      }
+
       return response.data;
     } catch (error: unknown) {
       console.error("Error fetching hotels data:", error);

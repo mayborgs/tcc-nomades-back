@@ -17,10 +17,7 @@ const lambda: NonNullable<AWS["functions"]>[string] = {
     // PLAYER_TABLE_NAME: {
     //   Ref: "PlayerTable",
     // },
-    RIOT_API_KEY: "RGAPI-d9b42c50-5d30-4609-a1ef-ef2e18bc4d47",
-    RAPID_API_KEY: "f1a598d425msh40cb25dc3a3c690p1c5779jsn666f529a56ba",
-    RAPID_API_HOST: "booking-com15.p.rapidapi.com",
-    RAPID_API_FLIGHTS_HOST: "google-flights2.p.rapidapi.com",
+    // put my envs here
     // PROCESS_QUEUE_URL: {
     //   Ref: "ProcessQueue",
     // },

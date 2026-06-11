@@ -9,7 +9,7 @@ import { FlightsMapper, type IFlightDisplay } from "../mappers/flights.mapper";
 // eslint-disable-next-line no-restricted-imports
 import { HotelsMapper, type IHotelDisplay } from "../mappers/hotels.mapper";
 // eslint-disable-next-line no-restricted-imports
-import { locationMapper } from "../mappers/location.mapper";
+import { locationCoinMapper } from "../mappers/locationCoin.mapper";
 
 export class GetSearchInformationUseCase {
   constructor(
@@ -19,98 +19,67 @@ export class GetSearchInformationUseCase {
   ) {}
 
   async execute({
-    coin,
+    coinAmount,
     from,
     to,
-    date,
+    flightDate,
+    flightClass,
   }: {
-    coin: { from: string; to: string; amount?: number };
+    coinAmount?: number;
     from: string;
     to: string;
-    date: string;
+    flightDate: string;
+    flightClass?: "economy" | "premium_economy" | "business" | "first";
   }): Promise<{
     coinInformation?: string;
     hotelsInformation?: IHotelDisplay[];
     flightsInformation?: IFlightDisplay[];
   }> {
-    let coinInformation: string | undefined;
-    let hotelsInformation: IHotelDisplay[] | undefined;
-    let flightsInformation: IFlightDisplay[] | undefined;
+    const [coinResult, hotelsResult, flightsResult] = await Promise.allSettled([
+      this.coinGateway.getCoin(
+        locationCoinMapper[from as keyof typeof locationCoinMapper].coin,
+        locationCoinMapper[to as keyof typeof locationCoinMapper].coin,
+      ),
+      this.hotelsGateway.getHotels(
+        locationCoinMapper[to as keyof typeof locationCoinMapper].location,
+      ),
+      this.FlightsGateway.getFlights(
+        from,
+        to,
+        flightDate,
+        flightClass,
+        locationCoinMapper[from as keyof typeof locationCoinMapper].coin,
+      ),
+    ]);
 
-    try {
-      const coinData = await this.coinGateway.getCoin(coin.from, coin.to);
-      if (coinData === undefined) {
-        console.error("Error getting coin data");
-        throw new Error(
-          "Could not retrieve coin information for the provided currencies.",
-        );
-      }
+    const coinInformation =
+      coinResult.status === "fulfilled" && coinResult.value !== undefined
+        ? CoinMapper.coinMap(
+            coinResult.value,
+            coinAmount ?? 1,
+            locationCoinMapper[from as keyof typeof locationCoinMapper].coin,
+            locationCoinMapper[to as keyof typeof locationCoinMapper].coin,
+          )
+        : (console.error(
+            "Could not retrieve coin information for the provided currencies.",
+          ),
+          undefined);
 
-      coinInformation = CoinMapper.coinMap(
-        coinData,
-        coin.amount ?? 1,
-        coin.from,
-        coin.to,
-      );
+    const hotelsInformation =
+      hotelsResult.status === "fulfilled" && hotelsResult.value !== undefined
+        ? HotelsMapper.hotelsMap(hotelsResult.value)
+        : (console.error(
+            "Could not retrieve hotels information for the destination.",
+          ),
+          undefined);
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      const hotelsData = await this.hotelsGateway.getHotels(
-        locationMapper[to as keyof typeof locationMapper],
-      );
-      if (hotelsData === undefined) {
-        console.error("Error getting hotels data");
-        throw new Error(
-          "Could not retrieve hotels information for the destination.",
-        );
-      }
-      hotelsInformation = HotelsMapper.hotelsMap(hotelsData);
-
-      const flightsData = await this.FlightsGateway.getFlights(from, to, date);
-
-      if (flightsData === undefined) {
-        console.error("Error getting flights data");
-        throw new Error(
-          "Could not retrieve flights information for the destination and date.",
-        );
-      }
-
-      flightsInformation = FlightsMapper.flightsMap(flightsData);
-    } catch (error: unknown) {
-      console.error("Error executing GetSearchInformationUseCase:", error);
-
-      if (error instanceof Error) {
-        const errorMessages = [
-          "Could not retrieve coin information for the provided currencies.",
-          "Could not retrieve hotels information for the destination.",
-          "Could not retrieve flights information for the destination and date.",
-        ];
-
-        const isKnownError = errorMessages.some((message) =>
-          error.message.includes(message),
-        );
-
-        if (!isKnownError) {
-          console.error("An unexpected error occurred:", error);
-        }
-
-        if (error.message.includes("coin")) {
-          coinInformation = undefined;
-        }
-
-        if (error.message.includes("hotels")) {
-          hotelsInformation = undefined;
-        }
-        if (error.message.includes("flights")) {
-          flightsInformation = undefined;
-        }
-      }
-
-      return {
-        coinInformation,
-        hotelsInformation,
-        flightsInformation,
-      };
-    }
+    const flightsInformation =
+      flightsResult.status === "fulfilled" && flightsResult.value !== undefined
+        ? FlightsMapper.flightsMap(flightsResult.value)
+        : (console.error(
+            "Could not retrieve flights information for the destination and date.",
+          ),
+          undefined);
 
     return {
       coinInformation,

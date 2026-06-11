@@ -4,12 +4,13 @@ import {
   type IFlightApiResponse,
   type IFlightsGateway,
 } from "@/interfaces/gateways/flights.api.gateway";
-
 export class FlightsGateway implements IFlightsGateway {
   async getFlights(
     from: string,
     to: string,
     date: string = "2026-04-30", // api pattern,
+    flightClass?: "economy" | "premium_economy" | "business" | "first",
+    currency: string = "USD",
   ): Promise<IFlightApiResponse | undefined> {
     const options = {
       method: "GET",
@@ -18,9 +19,9 @@ export class FlightsGateway implements IFlightsGateway {
         departure_id: `${from}`,
         arrival_id: `${to}`,
         outbound_date: `${date}`,
-        travel_class: "ECONOMY",
+        travel_class: flightClass?.toUpperCase() ?? "ECONOMY",
         adults: "1",
-        currency: "USD",
+        currency,
         language_code: "en-US",
         search_type: "best",
       },

@@ -83,5 +83,7 @@ export interface IFlightsGateway {
     from: string,
     to: string,
     date: string,
+    flightClass?: "economy" | "premium_economy" | "business" | "first",
+    currency?: string,
   ) => Promise<IFlightApiResponse | undefined>;
 }
